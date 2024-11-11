@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lmzfm.dao.LeaveInfoMapper">
+
+        <!-- 通用查询映射结果 -->
+        <resultMap id="BaseResultMap" type="com.lmzfm.model.LeaveInfo">
+                    <id column="id" property="id"/>
+                    <result column="tel" property="tel"/>
+                    <result column="email" property="email"/>
+                    <result column="username" property="username"/>
+                    <result column="content" property="content"/>
+                    <result column="leave_time" property="leaveTime"/>
+        </resultMap>
+
+        <!-- 通用查询结果列 -->
+        <sql id="Base_Column_List">
+            id, tel, email, username, content, leave_time
+        </sql>
+
+    <select id="queryLeaveInfoAll"
+            resultType="com.lmzfm.model.LeaveInfo">
+        select * from leave_info
+        <where>
+            <if test="tel!=null and tel!=''">
+                and tel like '%${tel}%'
+            </if>
+        </where>
+        order by id desc
+    </select>
+</mapper>

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lmzfm.dao.TypeInfoMapper">
+
+        <!-- 通用查询映射结果 -->
+        <resultMap id="BaseResultMap" type="com.lmzfm.model.TypeInfo">
+                    <id column="id" property="id"/>
+                    <result column="name" property="name"/>
+                    <result column="remarks" property="remarks"/>
+        </resultMap>
+
+        <!-- 通用查询结果列 -->
+        <sql id="Base_Column_List">
+            id, name, remarks
+        </sql>
+
+    <select id="queryTypeList"
+            resultType="com.lmzfm.model.TypeInfo"
+            parameterType="com.lmzfm.model.TypeInfo">
+     select * from type_info
+     <where>
+         <if test="name!=null and name!=''">
+             and name like '%${name}%'
+         </if>
+     </where>
+    </select>
+
+</mapper>

@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lmzfm.dao.TeamMapper">
+
+        <!-- 通用查询映射结果 -->
+        <resultMap id="BaseResultMap" type="com.lmzfm.model.Team">
+                    <id column="id" property="id"/>
+                    <result column="name" property="name"/>
+                    <result column="create_by" property="createBy"/>
+                    <result column="type" property="type"/>
+                    <result column="user_id" property="userId"/>
+                    <result column="create_time" property="createTime"/>
+                    <result column="status" property="status"/>
+                    <result column="images" property="images"/>
+                    <result column="member" property="member"/>
+                    <result column="astrict" property="astrict"/>
+        </resultMap>
+
+        <!-- 通用查询结果列 -->
+        <sql id="Base_Column_List">
+            id, name, create_by, type, user_id, create_time, status, images
+        </sql>
+
+    <resultMap id="queryTeamListMap" type="com.lmzfm.model.Team"
+               extends="BaseResultMap">
+
+        <association property="typeInfo" javaType="com.lmzfm.model.TypeInfo">
+            <id column="id" property="id"></id>
+            <result property="name" column="typeName"></result>
+        </association>
+        <association property="userInfo" javaType="com.lmzfm.model.UserInfo">
+            <id column="id" property="id"></id>
+            <result property="username" column="username"></result>
+        </association>
+    </resultMap>
+    <select id="queryTeamList"
+            resultMap="queryTeamListMap"
+            parameterType="com.lmzfm.model.Team">
+      SELECT
+            t.*, type. name as typeName,
+            u.username
+        FROM
+            team t
+        LEFT JOIN type_info type ON type.id = t.type
+        LEFT JOIN userinfo u ON u.id = t.user_id
+      <where>
+          <if test="name!=null and name!=''">
+              and t.name like '%${name}%'
+          </if>
+          <if test="type!=null">
+
+              and t.type=#{type}
+          </if>
+      </where>
+    </select>
+
+    <select id="queryTeamInfoByUserId"
+            resultType="com.lmzfm.model.Team">
+        select * from team where user_id=#{userId}
+
+    </select>
+
+    <select id="queryById"  resultMap="queryTeamListMap" >
+        SELECT
+            t.*, type. name as typeName,
+            u.username
+        FROM
+            team t
+                LEFT JOIN type_info type ON type.id = t.type
+                LEFT JOIN userinfo u ON u.id = t.user_id
+        where t.id=#{id}
+
+    </select>
+
+    <select id="queryMyteamList"
+            resultMap="queryTeamListMap">
+        SELECT
+            t.*,users.username
+        FROM
+            team t
+                LEFT JOIN team_user tu ON tu.team_id = t.id
+                left join userinfo users on users.id=t.user_id
+        where tu.tel=#{tel}
+
+    </select>
+</mapper>

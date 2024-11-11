@@ -1,0 +1,28 @@
+server:
+  port: 9999
+  servlet:
+    context-path: /
+spring:
+  datasource:
+    driver-class-name: com.mysql.jdbc.Driver
+    type: com.alibaba.druid.pool.DruidDataSource
+    url: jdbc:mysql://localhost:3306/graduation_276_clubmanagement?useUnicode=true&amp&characterEncoding=utf-8&serverTimezone=GMT%2B8
+    username: root
+    password: 123456
+
+  mvc:
+    static-path-pattern: /images/**
+  web:
+    resources:
+      static-locations: file:BOOTCAMP://images/
+  devtools:
+    restart:
+      enabled: true
+mybatis-plus:
+  type-aliases-package: com.lmzfm.model
+  configuration:
+    map-underscore-to-camel-case: true
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+  mapper-locations: classpath:com/lmzfm/dao/*.xml
+
+

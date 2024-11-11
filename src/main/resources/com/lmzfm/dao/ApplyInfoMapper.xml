@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lmzfm.dao.ApplyInfoMapper">
+
+        <!-- 通用查询映射结果 -->
+        <resultMap id="BaseResultMap" type="com.lmzfm.model.ApplyInfo">
+                    <id column="id" property="id"/>
+                    <result column="realname" property="realname"/>
+                    <result column="sex" property="sex"/>
+                    <result column="number" property="number"/>
+                    <result column="college" property="college"/>
+                    <result column="grade" property="grade"/>
+                    <result column="tel" property="tel"/>
+                    <result column="email" property="email"/>
+                    <result column="address" property="address"/>
+                    <result column="qq" property="qq"/>
+                    <result column="weixin" property="weixin"/>
+                    <result column="content" property="content"/>
+                    <result column="create_time" property="createTime"/>
+                    <result column="status" property="status"/>
+                    <result column="team_id" property="teamId"/>
+        </resultMap>
+
+        <!-- 通用查询结果列 -->
+        <sql id="Base_Column_List">
+            id, realname, sex, number, college, grade, tel, email, address, qq, weixin, content, create_time, status, team_id
+        </sql>
+
+    <resultMap id="queryAppListMap"
+               type="com.lmzfm.model.ApplyInfo" extends="BaseResultMap">
+
+        <association property="team" javaType="com.lmzfm.model.Team">
+            <id column="id" property="id"/>
+            <result column="name" property="name"/>
+        </association>
+    </resultMap>
+
+    <select id="queryAppList"
+            resultMap="queryAppListMap"
+            parameterType="com.lmzfm.model.ApplyInfo">
+        SELECT
+        info.*, t. NAME
+        FROM
+        apply_info info
+        LEFT JOIN team t ON t.id = info.team_id
+
+        <where>
+            <if test="tel!=null and tel!=''">
+                and tel like '%${tel}%'
+            </if>
+            <if test="teamId!=null">
+                and team_id=#{teamId}
+            </if>
+            <if test="team!=null">
+                <if test="team.userId!=null">
+                    and t.user_id=#{team.userId}
+                </if>
+
+            </if>
+        </where>
+
+    </select>
+
+    <resultMap id="queryAppListByAppIdMap"
+               type="com.lmzfm.model.ApplyList">
+        <id column="id" property="id"/>
+        <result column="app_id" property="appId"/>
+        <result column="content" property="content"/>
+        <result column="status" property="status"/>
+        <result column="app_time" property="appTime"/>
+        <result column="email" property="email"/>
+        <association property="userinfo"
+                     javaType="com.lmzfm.model.UserInfo">
+            <id column="id" property="id"/>
+            <result column="username" property="username"/>
+        </association>
+    </resultMap>
+
+    <select id="queryAppListByAppId"
+            resultMap="queryAppListByAppIdMap"
+            parameterType="int">
+        SELECT
+            list.*, info.username
+        FROM
+            apply_list list
+                LEFT JOIN userinfo info ON info.id = list.app_author
+        where app_id=#{appId}
+
+    </select>
+
+    <update id="updateStatus"
+            parameterType="com.lmzfm.model.ApplyInfo">
+        update apply_info set status=#{status}
+        where id=#{id}
+    </update>
+
+    <insert id="insertAppList"
+            parameterType="com.lmzfm.model.ApplyList">
+        insert into apply_list
+            (app_id,content,status,app_time,app_author)
+        values (#{appId},#{content},#{status},#{appTime},#{appAuthor})
+    </insert>
+
+
+    <select id="queryApplyInfoByTeamIdAndTel"
+            resultType="com.lmzfm.model.ApplyInfo">
+        select * from apply_info
+        where tel=#{tel} and team_id=#{teamId}
+    </select>
+</mapper>

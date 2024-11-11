@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lmzfm.dao.ActivityMapper">
+
+        <!-- 通用查询映射结果 -->
+        <resultMap id="BaseResultMap" type="com.lmzfm.model.Activity">
+                    <id column="id" property="id"/>
+                    <result column="name" property="name"/>
+                    <result column="team_id" property="teamId"/>
+                    <result column="tel" property="tel"/>
+                    <result column="images" property="images"/>
+                    <result column="ct_info" property="ctInfo"/>
+                    <result column="ac_time" property="acTime"/>
+                    <result column="ct_address" property="ctAddress"/>
+                    <result column="user_id" property="userId"/>
+                    <result column="create_time" property="createTime"/>
+                    <result column="host" property="host"/>
+                    <result column="status" property="status"/>
+        </resultMap>
+
+        <!-- 通用查询结果列 -->
+        <sql id="Base_Column_List">
+            id, name, team_id, tel, images, ct_info, ac_time, ct_address, user_id, create_time, host, status
+        </sql>
+
+    <resultMap id="queryActivityInfoListMap"
+               type="com.lmzfm.model.Activity" extends="BaseResultMap">
+        <association property="team" javaType="com.lmzfm.model.Team">
+            <id column="id" property="id"/>
+            <result column="tname" property="name"/>
+        </association>
+        <association property="userinfo" javaType="com.lmzfm.model.UserInfo">
+            <id column="id" property="id"/>
+            <result column="username" property="username"/>
+        </association>
+
+    </resultMap>
+
+    <select id="queryActivityInfoList"
+            resultMap="queryActivityInfoListMap">
+
+        SELECT
+        ac.*, t. NAME AS tname,
+        info.username
+        FROM
+        activity ac
+        LEFT JOIN team t ON t.id = ac.team_id
+        LEFT JOIN userinfo info ON info.id = ac.user_id
+        <where>
+            <if test="name!=null and name!=''">
+                and ac.name like '%${name}%'
+            </if>
+            <if test="tel!=null and tel!=''">
+                and ac.tel like '%${tel}%'
+            </if>
+            <if test="userId!=null">
+                and ac.user_id =#{userId}
+            </if>
+        </where>
+    </select>
+
+    <update id="updateStatusById" >
+        update activity set status =#{status}
+        where id=#{id}
+    </update>
+
+    <select id="findByTeamId" parameterType="int"
+            resultType="com.lmzfm.model.Activity">
+        SELECT
+            *
+        FROM
+            activity ac
+        WHERE
+            team_id = #{teamId}
+          AND STATUS = 1
+        ORDER BY
+            id DESC
+            LIMIT 1
+    </select>
+
+</mapper>

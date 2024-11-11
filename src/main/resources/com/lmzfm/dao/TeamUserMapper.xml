@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lmzfm.dao.TeamUserMapper">
+
+        <!-- 通用查询映射结果 -->
+        <resultMap id="BaseResultMap" type="com.lmzfm.model.TeamUser">
+                    <id column="id" property="id"/>
+                    <result column="username" property="username"/>
+                    <result column="realname" property="realname"/>
+                    <result column="sex" property="sex"/>
+                    <result column="college" property="college"/>
+                    <result column="grade" property="grade"/>
+                    <result column="tel" property="tel"/>
+                    <result column="email" property="email"/>
+                    <result column="image" property="image"/>
+                    <result column="join_time" property="joinTime"/>
+                    <result column="team_id" property="teamId"/>
+                    <result column="password" property="password"/>
+                    <result column="state" property="state"/>
+        </resultMap>
+
+        <!-- 通用查询结果列 -->
+        <sql id="Base_Column_List">
+            id, username, realname, sex, college, grade, tel, email, image, join_time, team_id, password, state
+        </sql>
+
+    <resultMap id="queryTeamUserListMap"
+               type="com.lmzfm.model.TeamUser"
+               extends="BaseResultMap">
+        <association property="team" javaType="com.lmzfm.model.Team">
+            <id column="id" property="id"/>
+            <result column="tname" property="name"/>
+        </association>
+    </resultMap>
+
+    <select id="queryTeamUserList"
+            resultMap="queryTeamUserListMap" >
+        SELECT
+        tu.*, t. NAME AS tname
+        FROM
+        team_user tu
+        LEFT JOIN team t ON t.id = tu.team_id
+        <where>
+            <if test="tel!=null and tel!=''">
+                and tel like '%${tel}%'
+            </if>
+            <if test="realname!=null and realname!=''">
+                and realname like '%${realname}%'
+            </if>
+            and t.user_id=#{userId}
+        </where>
+
+    </select>
+
+    <select id="queryTeamUserByTeamIdAndTel"
+            resultType="com.lmzfm.model.TeamUser">
+
+        select * from team_user tu
+        where tu.tel=#{tel}
+          and tu.team_id=#{teamId}
+
+    </select>
+
+
+
+    <select id="queryByUserNameAndPwd"
+            resultType="com.lmzfm.model.TeamUser">
+
+        select * from team_user tu
+        where tu.realname=#{username}
+          and tu.`password`=#{password} limit 1
+
+    </select>
+</mapper>
